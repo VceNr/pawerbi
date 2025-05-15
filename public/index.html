@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Videojuegos</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    h1 { color: #333; }
+    ul { background: white; padding: 10px; border-radius: 5px; }
+    li { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>Lista de Videojuegos</h1>
+  <ul id="lista-datos"></ul>
+
+  <script>
+    fetch('/api/datos')
+      .then(res => res.json())
+      .then(datos => {
+        const lista = document.getElementById('lista-datos');
+        datos.forEach(juego => {
+          const li = document.createElement('li');
+          li.textContent = JSON.stringify(juego);
+          lista.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error('❌ Error al cargar datos:', err);
+        document.getElementById('lista-datos').innerHTML = '<li>Error al cargar datos</li>';
+      });
+  </script>
+</body>
+</html>
