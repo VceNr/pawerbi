@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public'))); // Servir HTML estático
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://vicente:vce.neira12@cluster0.ojt4bpw.mongodb.net/cosas?retryWrites=true&w=majority';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://vicente:vce.neira12@cluster0.ojt4bpw.mongodb.net/juegos?retryWrites=true&w=majority';
 const client = new MongoClient(uri); // Ya no uses useNewUrlParser ni useUnifiedTopology
 
 let collection;
@@ -35,8 +35,8 @@ app.get('/', (req, res) => {
 async function startServer() {
   try {
     await client.connect();
-    const db = client.db('cosas');
-    collection = db.collection('cs');
+    const db = client.db('juegos');
+    collection = db.collection('r_juegos');
     console.log('✅ Conectado a MongoDB Atlas');
   } catch (err) {
     console.error('❌ Error al conectar con MongoDB:', err);
