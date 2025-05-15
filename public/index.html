@@ -15,7 +15,7 @@
   <ul id="lista-datos"></ul>
 
   <script>
-    fetch('/api/datos')
+    fetch('/api/gatos')
       .then(res => res.json())
       .then(datos => {
         const lista = document.getElementById('lista-datos');
