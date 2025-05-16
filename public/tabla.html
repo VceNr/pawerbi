@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla de Juegos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 1000px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tabla de Juegos Registrados</h1>
+  <table id="tablaJuegos">
+    <thead>
+      <tr>
+        <th>Nombre del Juego</th>
+        <th>RAM</th>
+        <th>CPU</th>
+        <th>GPU</th>
+        <th>Almacenamiento</th>
+        <th>Conectividad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Aquí se llenarán los datos dinámicamente -->
+    </tbody>
+  </table>
+
+  <script>
+    async function cargarJuegos() {
+      try {
+        const respuesta = await fetch('/api/gatos'); // Usa /api/juegos si cambiaste el endpoint
+        const juegos = await respuesta.json();
+
+        const tbody = document.querySelector('#tablaJuegos tbody');
+        tbody.innerHTML = '';
+
+        juegos.forEach(juego => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${juego["Nombre del Juego"] || ''}</td>
+            <td>${juego.RAM || ''}</td>
+            <td>${juego.CPU || ''}</td>
+            <td>${juego.GPU || ''}</td>
+            <td>${juego.Almacenamiento || ''}</td>
+            <td>${juego.Conectividad || ''}</td>
+          `;
+          tbody.appendChild(fila);
+        });
+      } catch (error) {
+        console.error('Error al cargar los juegos:', error);
+      }
+    }
+
+    cargarJuegos();
+  </script>
+
+</body>
+</html>

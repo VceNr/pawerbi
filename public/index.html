@@ -2,33 +2,53 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Videojuegos</title>
-  <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    h1 { color: #333; }
-    ul { background: white; padding: 10px; border-radius: 5px; }
-    li { margin: 5px 0; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agregar Juego</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>Lista de Videojuegos</h1>
-  <ul id="lista-datos"></ul>
+
+  <form id="juegoForm">
+    <h2>Agregar Juego</h2>
+    <input type="text" name="Nombre del Juego" placeholder="Nombre del Juego" required>
+    <input type="text" name="RAM" placeholder="RAM" required>
+    <input type="text" name="CPU" placeholder="CPU">
+    <input type="text" name="GPU" placeholder="GPU">
+    <input type="text" name="Almacenamiento" placeholder="Almacenamiento">
+    
+    <label for="conectividad">Conectividad:</label>
+    <select name="Conectividad" id="conectividad">
+      <option value="Requiere Internet">Requiere Internet</option>
+      <option value="No necesario">No necesario</option>
+    </select>
+
+    <button type="submit">Enviar</button>
+    <button type="button" onclick="window.location.href='/tabla'">Tabla de juegos</button>
+  </form>
 
   <script>
-    fetch('/api/gatos')
-      .then(res => res.json())
-      .then(datos => {
-        const lista = document.getElementById('lista-datos');
-        datos.forEach(juego => {
-          const li = document.createElement('li');
-          li.textContent = JSON.stringify(juego);
-          lista.appendChild(li);
+    document.getElementById('juegoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const datos = {};
+      formData.forEach((value, key) => datos[key] = value);
+
+      try {
+        const response = await fetch('/api/juegos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
         });
-      })
-      .catch(err => {
-        console.error('❌ Error al cargar datos:', err);
-        document.getElementById('lista-datos').innerHTML = '<li>Error al cargar datos</li>';
-      });
+
+        const resultado = await response.json();
+        alert(resultado.mensaje || resultado.error);
+        this.reset();
+      } catch (error) {
+        alert('Error al enviar los datos');
+        console.error('❌ Error:', error);
+      }
+    });
   </script>
+
 </body>
 </html>
