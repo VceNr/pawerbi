@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabla de Juegos</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tabla dinámica de Colecciones</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,11 +11,14 @@
       padding: 20px;
       text-align: center;
     }
-
     h1 {
       margin-bottom: 20px;
     }
-
+    select {
+      padding: 8px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
     table {
       margin: 0 auto;
       border-collapse: collapse;
@@ -24,21 +27,17 @@
       background-color: white;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
     th, td {
       padding: 12px;
       border: 1px solid #ccc;
     }
-
     th {
       background-color: #4CAF50;
       color: white;
     }
-
     tr:nth-child(even) {
       background-color: #f9f9f9;
     }
-
     tr:hover {
       background-color: #f1f1f1;
     }
@@ -46,50 +45,108 @@
 </head>
 <body>
 
-  <h1>Tabla de Juegos Registrados</h1>
+  <h1>Tabla de datos</h1>
+
+  <label for="coleccion">Selecciona la colección:</label>
+  <select id="coleccion">
+    <option value="">-- Cargando colecciones... --</option>
+  </select>
+
   <table id="tablaJuegos">
     <thead>
-      <tr>
-        <th>Nombre del Juego</th>
-        <th>RAM</th>
-        <th>CPU</th>
-        <th>GPU</th>
-        <th>Almacenamiento</th>
-        <th>Conectividad</th>
-      </tr>
+      <!-- Se construirá dinámicamente -->
     </thead>
     <tbody>
-      <!-- Aquí se llenarán los datos dinámicamente -->
+      <!-- Se llenarán los datos dinámicamente -->
     </tbody>
   </table>
 
   <script>
-    async function cargarJuegos() {
+    async function cargarColecciones() {
+      const select = document.getElementById('coleccion');
       try {
-        const respuesta = await fetch('/api/gatos'); // Usa /api/juegos si cambiaste el endpoint
-        const juegos = await respuesta.json();
+        const res = await fetch('/api/colecciones');
+        const colecciones = await res.json();
 
-        const tbody = document.querySelector('#tablaJuegos tbody');
-        tbody.innerHTML = '';
-
-        juegos.forEach(juego => {
-          const fila = document.createElement('tr');
-          fila.innerHTML = `
-            <td>${juego["Nombre del Juego"] || ''}</td>
-            <td>${juego.RAM || ''}</td>
-            <td>${juego.CPU || ''}</td>
-            <td>${juego.GPU || ''}</td>
-            <td>${juego.Almacenamiento || ''}</td>
-            <td>${juego.Conectividad || ''}</td>
-          `;
-          tbody.appendChild(fila);
+        select.innerHTML = '<option value="">-- Selecciona una colección --</option>';
+        colecciones.forEach(nombre => {
+          const option = document.createElement('option');
+          option.value = nombre;
+          option.textContent = nombre;
+          select.appendChild(option);
         });
       } catch (error) {
-        console.error('Error al cargar los juegos:', error);
+        select.innerHTML = '<option value="">-- Error al cargar colecciones --</option>';
+        console.error('Error al cargar colecciones:', error);
       }
     }
 
-    cargarJuegos();
+    async function cargarJuegos(coleccion) {
+      const thead = document.querySelector('#tablaJuegos thead');
+      const tbody = document.querySelector('#tablaJuegos tbody');
+
+      if (!coleccion) {
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/juegos-coleccion?coleccion=${encodeURIComponent(coleccion)}`);
+        const juegos = await res.json();
+
+        // Si no hay datos:
+        if (!juegos.length) {
+          thead.innerHTML = '<tr><th>No hay datos en esta colección</th></tr>';
+          tbody.innerHTML = '';
+          return;
+        }
+
+        // Obtener todos los campos únicos (keys) de los documentos:
+        const campos = new Set();
+        juegos.forEach(juego => {
+          Object.keys(juego).forEach(key => {
+            if (key !== '_id') campos.add(key); // opcional: ocultar _id
+          });
+        });
+
+        // Construir encabezado
+        thead.innerHTML = '';
+        const trHead = document.createElement('tr');
+        campos.forEach(campo => {
+          const th = document.createElement('th');
+          th.textContent = campo;
+          trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+
+        // Construir filas con valores
+        tbody.innerHTML = '';
+        juegos.forEach(juego => {
+          const tr = document.createElement('tr');
+          campos.forEach(campo => {
+            const td = document.createElement('td');
+            // Si no existe el campo en el doc, dejar vacío
+            td.textContent = juego[campo] !== undefined ? juego[campo] : '';
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+      } catch (error) {
+        console.error('Error al cargar los juegos:', error);
+        thead.innerHTML = '<tr><th>Error al cargar datos</th></tr>';
+        tbody.innerHTML = '';
+      }
+    }
+
+    document.getElementById('coleccion').addEventListener('change', function() {
+      cargarJuegos(this.value);
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await cargarColecciones();
+    });
   </script>
 
 </body>

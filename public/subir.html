@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Subir Excel</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <form id="formularioExcel" enctype="multipart/form-data">
+      <h2>Subir Archivo Excel a MongoDB</h2>
+    <label for="coleccion">Selecciona la colección:</label>
+    <select name="coleccion" id="coleccion" required>
+      <option value="">-- Cargando colecciones... --</option>
+    </select>
+
+    <br /><br />
+
+    <input type="file" name="archivo" accept=".xlsx, .xls" required />
+    <br /><br />
+    <button type="submit">Subir y Guardar</button>
+  </form>
+
+  <script>
+    async function cargarColecciones() {
+      const select = document.getElementById('coleccion');
+      try {
+        const res = await fetch('/api/colecciones');
+        const colecciones = await res.json();
+
+        select.innerHTML = '<option value="">-- Selecciona una colección --</option>';
+        colecciones.forEach(nombre => {
+          const option = document.createElement('option');
+          option.value = nombre;
+          option.textContent = nombre;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        select.innerHTML = '<option value="">-- Error al cargar colecciones --</option>';
+        console.error('Error al cargar colecciones:', error);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarColecciones);
+
+    document.getElementById('formularioExcel').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch('/api/subir-excel', {
+          method: 'POST',
+          body: formData
+        });
+
+        const json = await res.json();
+        alert(json.mensaje || json.error);
+        this.reset();
+      } catch (err) {
+        alert('❌ Error al subir archivo');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
