@@ -1,0 +1,162 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow: auto; /* permite que el contenido se muestre normalmente */
+}
+.navbar img.logo {
+  height: 60px;
+  width: auto;
+}
+/* Navbar superior */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* o start si quieres la imagen a la izquierda */
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+.nv1 {
+  display: flex;
+  gap: 10px;
+  margin-left: 1240px; /* lo empuja hacia la derecha */
+}
+
+.nv1 a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 10px;
+}
+
+.nv1 a:hover {
+  background-color: #575757;
+  border-radius: 5px;
+}
+.weas1{
+  height: 10px;
+  width: 10px;
+}
+
+/* Espacio de contenido debajo del navbar */
+.contenido-principal {
+  position: absolute;
+  top: 100px;    /* altura del navbar superior */
+  bottom: 60px;  /* altura del navbar inferior */
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: auto;
+  background-color: #000000;
+}
+
+/* Puedes personalizar estas columnas como gustes */
+.columna, .columna1, .columna2 {
+  flex: 1;
+  overflow-y: auto; /* cada columna puede hacer scroll si su contenido lo necesita */
+}
+.columna1{
+  background-color: rgb(255, 255, 255);
+}
+.columna2{
+  background-color: rgb(100, 56, 2);
+}
+.columna{
+  background-color: bisque;
+}
+/* Ejemplo de estilo para tarjeta */
+.card {
+  background: #f3f3f3;
+  padding: 20px;
+  border-radius: 8px;
+}
+.navbara {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.navbara a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  padding: 10px;
+}
+
+.navbara a:hover {
+  background-color: #575757;
+  border-radius: 5px;
+}
+.formter {
+  padding: 20px;
+  background-color: #828181;
+  border-radius: 20px;
+  max-width: 40%;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  margin-left: 20px;
+  
+}
+
+#juegoForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+#juegoForm h2 {
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+#juegoForm select{
+  padding: 10px;
+  font-size: 12px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  flex: 1 1 200px;
+}
+#juegoForm input{
+  padding: 10px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1 1 200px;
+}
+
+#juegoForm label {
+  flex: 1 1 100%;
+  font-weight: bold;
+}
+
+#juegoForm button {
+  padding: 6px 10px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1 1 150px;
+}
+
+#juegoForm button:hover {
+  background-color: #555;
+}
+

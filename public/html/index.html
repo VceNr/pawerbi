@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inicio</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:,">
+</head>
+<body>
+<div class="navbar">
+  <img src="descarga.jpg" alt="Logo externo" class="logo">
+  <div class="nv1">
+    <a href="#">Inicio</a>
+    <a href="#">Perfil</a>
+    <a href="#">Contacto</a>
+  </div>
+</div>
+
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="contenido-principal">
+    
+    <!-- COLUMNA 1: Formulario -->
+    <div class="columna">
+      <div class="formter">
+        <form id="juegoForm">
+          <h2>Agregar Juego</h2>
+          <input type="text" name="Nombre del Juego" placeholder="Nombre del Juego" required />
+          <input type="text" name="RAM" placeholder="RAM" required />
+          <input type="text" name="CPU" placeholder="CPU" />
+          <input type="text" name="GPU" placeholder="GPU" />
+          <input type="text" name="Almacenamiento" placeholder="Almacenamiento" />
+          <input type="text" name="Cantidad de Usuarios" placeholder="Usuarios" />
+
+          <label for="conectividad">Conectividad:</label>
+          <select name="Conectividad" id="conectividad">
+            <option value="Requiere Internet">Requiere Internet</option>
+            <option value="No necesario">No necesario</option>
+          </select>
+
+          <button type="submit">Enviar</button>
+          <button type="button" onclick="window.location.href='/subir'">Subir Excel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- COLUMNA 2: Contenido dinámico -->
+    <div class="columna1">
+      <div id="tabla-container">
+        <h1>Tabla de datos</h1>
+
+        <label for="coleccion">Selecciona la colección:</label>
+        <select id="coleccion">
+          <option value="">-- Cargando colecciones... --</option>
+        </select>
+
+        <div class="table-container">
+          <table id="tablaJuegos">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA 3: Vacía para que la completes -->
+    <div class="columna2">
+      <div class="card" id="juego-card">
+        <div class="loading">Cargando juego más popular...</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="navbara">
+    <a href="#">Inicio</a>
+    <a href="#">Perfil</a>
+    <a href="#">Contacto</a>
+  </div>
+  <!-- Scripts separados -->
+  <script src="script/tabla.js"></script>
+  <script src="script/index.js"></script>
+  <script src="script/juegop.js"></script>
+</body>
+</html>

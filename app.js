@@ -1,25 +1,40 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
-const cors = require('cors');
-const path = require('path');
-const multer = require('multer');
-const XLSX = require('xlsx');
+// Importación de módulos necesarios
+const express = require('express'); // Framework para crear el servidor y rutas
+const { MongoClient } = require('mongodb'); // Cliente para conectar a MongoDB
+const cors = require('cors'); // ✅ Permite el acceso a la API desde otros orígenes (CORS)
+const path = require('path'); // Módulo para manejar rutas de archivos
+const multer = require('multer'); // Middleware para manejar archivos subidos
+const XLSX = require('xlsx'); // Librería para leer archivos Excel (.xlsx)
 
+// Inicializa la aplicación Express
 const app = express();
+
+// Define el puerto
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// ✅ Middleware CORS (habilita acceso desde otras apps como Angular)
+app.use(cors({
+  origin: 'http://localhost:4200', // ⬅️ Angular en desarrollo corre en este puerto
+  optionsSuccessStatus: 200
+}));
+
+// Middlewares adicionales
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// URI de conexión a MongoDB
 const uri = process.env.MONGODB_URI || 'mongodb+srv://vicente:vce.neira12@cluster0.ojt4bpw.mongodb.net/juegos?retryWrites=true&w=majority';
 const client = new MongoClient(uri);
+
+// Configura almacenamiento en memoria para archivos subidos
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// Variable global para almacenar una colección
 let collection;
 
-// 🔹 GET - Obtener todos los juegos
+/* ========= RUTAS DE API ========= */
+
 app.get('/api/gatos', async (req, res) => {
   if (!collection) return res.status(503).json({ error: 'Base de datos no disponible aún' });
 
@@ -32,7 +47,6 @@ app.get('/api/gatos', async (req, res) => {
   }
 });
 
-// 🔹 POST - Insertar juego manualmente
 app.post('/api/juegos', async (req, res) => {
   if (!collection) return res.status(503).json({ error: 'Base de datos no disponible aún' });
 
@@ -55,7 +69,6 @@ app.post('/api/juegos', async (req, res) => {
   }
 });
 
-// 🔹 POST - Subir Excel y evitar duplicados
 app.post('/api/subir-excel', upload.single('archivo'), async (req, res) => {
   const coleccionNombre = req.body.coleccion;
   if (!req.file) return res.status(400).json({ error: 'No se ha subido ningún archivo' });
@@ -68,7 +81,6 @@ app.post('/api/subir-excel', upload.single('archivo'), async (req, res) => {
 
     const db = client.db('juegos');
     const coleccion = db.collection(coleccionNombre);
-
     const resultado = await coleccion.insertMany(datos);
 
     res.json({
@@ -80,11 +92,30 @@ app.post('/api/subir-excel', upload.single('archivo'), async (req, res) => {
   }
 });
 
+
+app.get('/juego-mas-popular', async (req, res) => {
+  try {
+    const db = client.db('juegos');
+    const col = db.collection('r_juegos');
+
+    const juegoMasPopular = await col.findOne({}, { sort: { "Cantidad de Usuarios": -1 } });
+
+    if (juegoMasPopular) {
+      res.json(juegoMasPopular);
+    } else {
+      res.status(404).json({ error: 'No se encontró ningún juego' });
+    }
+  } catch (error) {
+    console.error("❌ Error real en /juego-mas-popular:", error);
+    res.status(500).json({ error: 'Error al obtener el juego más popular' });
+  }
+});
+
+
 app.get('/api/colecciones', async (req, res) => {
   try {
-    const db = client.db('juegos'); // Cambia si usas otro nombre
+    const db = client.db('juegos');
     const colecciones = await db.listCollections().toArray();
-    // Extraemos solo los nombres
     const nombres = colecciones.map(c => c.name);
     res.json(nombres);
   } catch (err) {
@@ -92,6 +123,7 @@ app.get('/api/colecciones', async (req, res) => {
     res.status(500).json({ error: 'No se pudieron obtener las colecciones' });
   }
 });
+
 app.get('/api/juegos-coleccion', async (req, res) => {
   if (!collection) return res.status(503).json({ error: 'Base de datos no disponible aún' });
 
@@ -109,25 +141,29 @@ app.get('/api/juegos-coleccion', async (req, res) => {
   }
 });
 
-// Rutas HTML
+/* ========= RUTAS HTML ========= */
+
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'index.html'));
 });
+
 app.get('/subir', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'subir.html'));
+  res.sendFile(path.join(__dirname, 'public/html', 'subir.html'));
 });
+
+
 app.get('/tabla', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tabla.html'));
 });
 
-// 🔹 Iniciar servidor y conectar MongoDB
+/* ========= INICIAR EL SERVIDOR Y CONECTAR A MONGODB ========= */
+
 async function startServer() {
   try {
     await client.connect();
     const db = client.db('juegos');
     collection = db.collection('r_juegos');
 
-    // Crear índice único
     await collection.createIndex({ "Nombre del Juego": 1 }, { unique: true });
     console.log('✅ Índice único aplicado a "Nombre del Juego"');
     console.log('✅ Conectado a MongoDB Atlas');
